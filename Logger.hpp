@@ -24,6 +24,7 @@ class Logger
     public:
     Logger(const char* path);
     ~Logger(void);
+    void Crash(void);
 
     template <class T>
     friend Logger& operator <<(Logger& logStream, T const& report);
@@ -35,11 +36,19 @@ Logger::Logger(const char* path)
 
     if(output.is_open() == false)
         std::cout << "Could not open log file!" << std::endl;
+
+    output << "Logger " + std::string(path) + " created!" << std::endl;
 }
 
 Logger::~Logger(void)
 {
     output.close();
+}
+
+void Logger::Crash(void)
+{
+    *this << "Program crashed!";
+    exit(-1);
 }
 
 template<class T>
