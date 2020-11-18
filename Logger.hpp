@@ -9,6 +9,7 @@
 #include<sys/stat.h>
 #include<sys/time.h>
 
+
 /*
 *
 *
@@ -19,21 +20,24 @@
 
 class Logger
 {
-    private:
-    std::string filepath;
-    std::ofstream output;
-    time_t time;
+    protected:
+    std::string              filepath;
+    std::ofstream            output;
+    time_t                   time;
+
+    void openIfExists(void);
 
     public:
-    Logger(const std::string path);
-    ~Logger(void);
-    void Crash(void);
-    bool exists(void);
-    void close(void);
-    void open(void);
+         Logger (const std::string path);
+        ~Logger (void);
+    void Crash  (void);
+    bool exists (void);
+    void close  (void);
+    void open   (void);
 
     template <class T>
     friend Logger& operator <<(Logger& logStream, T const& report);
+
 };
 
 Logger::Logger(const std::string path)
@@ -75,17 +79,22 @@ void Logger::open(void)
     output << "Logger " + std::string(filepath) + " created!" << std::endl;
 }
 
-template<class T>
-Logger& operator <<(Logger& logStream, T const& report)
+void Logger::openIfExists(void)
 {
-    if(logStream.exists() == false)
+    if(exists() == false)
     {
         std::cout << "File doesn't exist!" << std::endl;
     }
-    else if(logStream.output.is_open() == false)
+    else if(output.is_open() == false)
     {
-        logStream.open();
+        open();
     }
+}
+
+template<class T>
+Logger& operator <<(Logger& logStream, T const& report)
+{
+    logStream.openIfExists();
 
     if(logStream.output.is_open() == true)
     {
@@ -97,5 +106,6 @@ Logger& operator <<(Logger& logStream, T const& report)
 
     return logStream;
 }
+
 
 #endif
