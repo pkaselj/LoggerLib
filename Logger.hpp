@@ -18,27 +18,75 @@
 *
 */
 
-class Logger
+
+class NulLogger
 {
     protected:
-    std::string              filepath;
-    std::ofstream            output;
-    time_t                   time;
-
-    void openIfExists(void);
+    virtual NulLogger& logString (std::string const& report);
 
     public:
-         Logger (const std::string path);
-        ~Logger (void);
-    void Crash  (void);
-    bool exists (void);
-    void close  (void);
-    void open   (void);
+    NulLogger(void) {};
+    virtual ~NulLogger(void) {};
+    void    Crash  (void);
+    friend NulLogger& operator <<(NulLogger& logStream, std::string const& report);
+};
 
-    template <class T>
-    friend Logger& operator <<(Logger& logStream, T const& report);
+NulLogger& NulLogger::logString (std::string const& report)
+{
+    return *this;
+}
+
+void NulLogger::Crash(void)
+{
+    *this << "Program crashed!";
+    exit(-1);
+}
+
+NulLogger& operator <<(NulLogger& logStream, std::string const& report)
+{
+    return logStream.logString(report);
+}
+
+class Logger : public NulLogger
+{
+    private:
+        bool exists (void);
+        void close  (void);
+        void open   (void);
+
+    protected:
+        std::string              filepath;
+        std::ofstream            output;
+        time_t                   time;
+
+        void openIfExists(void);
+
+        /* Called by operator<<, used for polymorphism (class NulLogger) */
+        virtual Logger& logString (std::string const& report);
+                        Logger    (void) {};
+        /*_______________________________________________________________*/
+
+    public:
+            Logger (const std::string path);
+    virtual ~Logger (void);
+
+    /*  
+    *   template <class T>
+    *   friend Logger& operator <<(Logger& logStream, T const& report);
+    *    
+    *   Commented method allows for streaming objects to log,
+    *   currently implemented one supports only strings.
+    * 
+    *   This was done because of child class NulLogger
+    *   which is used when a class which uses Logger class
+    *   doesn't want to log anything.
+    * 
+    *   TODO solution if possible?
+    * 
+    */
 
 };
+
 
 Logger::Logger(const std::string path)
 {
@@ -48,13 +96,8 @@ Logger::Logger(const std::string path)
 
 Logger::~Logger(void)
 {
+    *this << "Closing logger";
     close();
-}
-
-void Logger::Crash(void)
-{
-    *this << "Program crashed!";
-    exit(-1);
 }
 
 bool Logger::exists(void)
@@ -91,21 +134,23 @@ void Logger::openIfExists(void)
     }
 }
 
-template<class T>
-Logger& operator <<(Logger& logStream, T const& report)
+Logger& Logger::logString (std::string const& report)
 {
-    logStream.openIfExists();
+    openIfExists();
 
-    if(logStream.output.is_open() == true)
+    if(output.is_open() == true)
     {
         struct timeval time;
         gettimeofday( &time, NULL );
 
-        logStream.output << time.tv_sec << ":" << time.tv_usec << "--- " << report << std::endl;
+        output << time.tv_sec << ":" << time.tv_usec << "--- " << report << std::endl;
     }
 
-    return logStream;
+    return *this;
 }
+
+
+
 
 
 #endif
