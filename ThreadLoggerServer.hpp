@@ -51,8 +51,6 @@ void ThreadLoggerServer::startLogging(void)
 
     if(p_logger != nullptr) // ? NEEDED ?
         *p_logger << "TL: " + message.sender + " : " + message.content;
-
-    std::cout << "TL: " + message.sender + " : " + message.content << std::endl;
 }
 
 #endif
