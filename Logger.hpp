@@ -1,13 +1,7 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
-#include<iostream>
-#include<fstream>
-#include<cstdio>
-#include<unistd.h>
-#include<cstdlib>
-#include<sys/stat.h>
-#include<sys/time.h>
+#include"ILogger.hpp"
 
 
 /*
@@ -19,7 +13,8 @@
 */
 
 
-class NulLogger
+
+class NulLogger : public ILogger
 {
     protected:
     virtual NulLogger& logString (std::string const& report);
@@ -27,8 +22,7 @@ class NulLogger
     public:
     NulLogger(void) {};
     virtual ~NulLogger(void) {};
-    void    Crash  (void);
-    friend NulLogger& operator <<(NulLogger& logStream, std::string const& report);
+    virtual void Crash (void);
 };
 
 NulLogger& NulLogger::logString (std::string const& report)
@@ -42,10 +36,8 @@ void NulLogger::Crash(void)
     exit(-1);
 }
 
-NulLogger& operator <<(NulLogger& logStream, std::string const& report)
-{
-    return logStream.logString(report);
-}
+
+
 
 class Logger : public NulLogger
 {
