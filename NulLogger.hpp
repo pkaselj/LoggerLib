@@ -3,6 +3,13 @@
 
 #include"ILogger.hpp"
 
+/**
+ * @brief NulLogger class
+ * 
+ * Used as a default logger in other classes. \n
+ * \n
+ * Does nothing with the input. Used to implement logger as an optional parameter. \n
+ */
 class NulLogger : public ILogger
 {
     protected:

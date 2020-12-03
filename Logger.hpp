@@ -3,27 +3,50 @@
 
 #include"ILogger.hpp"
 
+/**
+ * @brief Class used for logging messages to a file
+ * 
+ * Derives from ILogger interface
+ */
 class Logger : public ILogger
 {
     private:
+        /// returns TRUE if log file already exists
         bool exists (void);
+
+        /// Close log file
         void close  (void);
+
+        /// Open log file
         void open   (void);
 
     protected:
+        /// Path to log file
         std::string              filepath;
+
+        /// Output stream object to write to `filepath`
         std::ofstream            output;
+
+        /// Current time (to be replaced with Time class)
         time_t                   time;
 
+        /// Open log file for writing ONLY if it exists
         void openIfExists(void);
 
-        /* Called by operator<<, used for polymorphism (class NulLogger) */
+        /// Called by operator<<, used for polymorphism (class NulLogger)
         virtual Logger& logString (std::string const& report);
-                        Logger    (void) {};
-        /*_______________________________________________________________*/
+                        /// Create default Logger object
+                        Logger    (void) = default;
 
     public:
+            /**
+             * @brief Construct a new Logger object
+             * 
+             * @param path File path to a log file. Creates one if it doesn't exist
+             */
              Logger (const std::string path);
+
+             /// Used to crash process in case of major error. (To be removed)
         void Crash  ();
     virtual ~Logger (void);
 
