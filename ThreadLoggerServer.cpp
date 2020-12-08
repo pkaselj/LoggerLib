@@ -24,8 +24,7 @@ void ThreadLoggerServer::startLogging(void)
     if(this->isAvailable() != true)
         return;
 
-    std::string rawMessage = mailbox.receive();
-    mailbox_message message = mailbox.decodeRawMessage(rawMessage);
+    mailbox_message message = mailbox.receiveWithoutAcknowledgement();
 
     if(p_logger != nullptr) // ? NEEDED ?
         *p_logger << "TL: " + message.sender + " : " + message.content;

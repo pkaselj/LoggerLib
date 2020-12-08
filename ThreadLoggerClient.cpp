@@ -12,6 +12,6 @@ void ThreadLoggerClient::Crash(void)
 
 ThreadLoggerClient& ThreadLoggerClient::logString(std::string const& report)
 {
-    mailbox.send(loggerMailbox, report);
+    mailbox.sendWithoutAcknowledgement(loggerMailbox, report);
     return *this;
 }
