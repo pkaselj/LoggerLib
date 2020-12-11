@@ -1,5 +1,10 @@
 #include"Logger.hpp"
 
+#include"/home/pi/Shared/TimeLib/0.0.0/Time.hpp"
+
+struct timespec Time::raw_time;
+struct tm Time::refined_time;
+
 Logger::Logger(const std::string path)
 {
     filepath = path;
@@ -52,10 +57,7 @@ Logger& Logger::logString (std::string const& report)
 
     if(output.is_open() == true)
     {
-        struct timeval time;
-        gettimeofday( &time, NULL );
-
-        output << time.tv_sec << ":" << time.tv_usec << "--- " << report << std::endl;
+        output << Time::getTime() << "--- " << report << std::endl;
     }
 
     return *this;
